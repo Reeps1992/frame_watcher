@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Fonction pour réinitialiser le fichier de log
-reset_log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - Log reset due to application restart" > /var/log/restart_application.log
-}
-
 # Fonction pour vérifier et lancer la session screen si elle n'existe pas
 check_and_launch_screen() {
     if screen -list | grep -q "\.QUIL"; then
@@ -32,7 +27,6 @@ get_frame_number() {
 
 # Fonction pour redémarrer l'application
 restart_application() {
-    reset_log  # Réinitialiser le fichier de log
 
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Restarting the application in screen QUIL..." | tee -a /var/log/restart_application.log
 
