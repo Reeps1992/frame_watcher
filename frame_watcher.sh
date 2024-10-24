@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Vérifier si le fichier de log existe, sinon le créer
+if [ ! -f /var/log/restart_application.log ]; then
+    touch /var/log/restart_application.log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - Log file created." | tee -a /var/log/restart_application.log
+fi
+
 # Fonction pour vérifier et lancer la session screen si elle n'existe pas
 check_and_launch_screen() {
     if screen -list | grep -q "\.QUIL"; then
@@ -27,20 +33,19 @@ get_frame_number() {
 
 # Fonction pour redémarrer l'application
 restart_application() {
-
     echo "$(date '+%Y-%m-%d %H:%M:%S') - Restarting the application in screen QUIL..." | tee -a /var/log/restart_application.log
 
     # Vérifier si le processus node existe avant de le tuer
     echo "Checking if node process exists..." | tee -a /var/log/restart_application.log
     pgrep -f "/home/user/ceremonyclient/node/node-2.0.1-linux-amd64" | tee -a /var/log/restart_application.log
-    
+
     echo "Attempting to kill node process..." | tee -a /var/log/restart_application.log
     pkill -f "/home/user/ceremonyclient/node/node-2.0.1-linux-amd64"
-    
+
     # Vérifier si le script autorun existe avant de le tuer
     echo "Checking if autorun script exists..." | tee -a /var/log/restart_application.log
     pgrep -f "/bin/bash ./release_autorun.sh" | tee -a /var/log/restart_application.log
-    
+
     echo "Attempting to kill autorun script..." | tee -a /var/log/restart_application.log
     pkill -f "/bin/bash ./release_autorun.sh"
 
@@ -65,7 +70,7 @@ monitor_frame_number() {
     echo "Old frame_number: $old_frame_number" | tee -a /var/log/restart_application.log
 
     local total_wait=300  # Temps total d'attente en secondes
-    local interval=10  # Intervalle en secondes pour afficher le timer
+    local interval=10     # Intervalle en secondes pour afficher le timer
 
     # Timer qui affiche toutes les 10 secondes le temps restant
     while [ $total_wait -gt 0 ]; do
