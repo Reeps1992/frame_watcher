@@ -23,12 +23,12 @@ check_and_launch_screen() {
     fi
 }
 
-# Fonction pour extraire la valeur de frame_number de la sortie de la session screen
+# Fonction pour extraire la valeur de current_head_frame de la sortie de la session screen
 get_frame_number() {
     # Capture la sortie de la session 'screen' dans un fichier temporaire
     screen -S QUIL -X hardcopy /tmp/screen_output.txt
-    # Extrait la valeur de frame_number
-    tail -n 100 /tmp/screen_output.txt | grep '"frame_number"' | tail -n 1 | jq '.frame_number'
+    # Extrait la valeur de current_head_frame
+    tail -n 100 /tmp/screen_output.txt | grep '"current_head_frame"' | tail -n 1 | jq '.current_head_frame'
 }
 
 # Fonction pour redémarrer l'application
@@ -63,11 +63,11 @@ restart_application() {
     fi
 }
 
-# Fonction pour surveiller l'évolution de frame_number
+# Fonction pour surveiller l'évolution de current_head_frame
 monitor_frame_number() {
-    # Obtenir l'ancienne valeur de frame_number
+    # Obtenir l'ancienne valeur de current_head_frame
     local old_frame_number=$(get_frame_number)
-    echo "Old frame_number: $old_frame_number" | tee -a /var/log/restart_application.log
+    echo "Old current_head_frame: $old_frame_number" | tee -a /var/log/restart_application.log
 
     local total_wait=300  # Temps total d'attente en secondes
     local interval=10     # Intervalle en secondes pour afficher le timer
@@ -79,16 +79,16 @@ monitor_frame_number() {
         total_wait=$((total_wait - interval))
     done
 
-    # Obtenir la nouvelle valeur de frame_number
+    # Obtenir la nouvelle valeur de current_head_frame
     local new_frame_number=$(get_frame_number)
-    echo "New frame_number: $new_frame_number" | tee -a /var/log/restart_application.log
+    echo "New current_head_frame: $new_frame_number" | tee -a /var/log/restart_application.log
 
-    # Si frame_number n'a pas changé, redémarrer l'application
+    # Si current_head_frame n'a pas changé, redémarrer l'application
     if [ "$old_frame_number" == "$new_frame_number" ]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - frame_number hasn't changed in 300 seconds. Restarting application." | tee -a /var/log/restart_application.log
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - current_head_frame hasn't changed in 300 seconds. Restarting application." | tee -a /var/log/restart_application.log
         restart_application
     else
-        echo "$(date '+%Y-%m-%d %H:%M:%S') - frame_number is increasing. No restart needed." | tee -a /var/log/restart_application.log
+        echo "$(date '+%Y-%m-%d %H:%M:%S') - current_head_frame is increasing. No restart needed." | tee -a /var/log/restart_application.log
     fi
 }
 
